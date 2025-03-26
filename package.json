@@ -1,0 +1,12 @@
+{
+  "name": "space-invaders-websocket",
+  "version": "1.0.0",
+  "description": "Space Invaders game with WebSocket control",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "ws": "^8.13.0"
+  }
+} 

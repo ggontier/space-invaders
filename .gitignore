@@ -1,0 +1,40 @@
+# Node.js
+node_modules/
+npm-debug.log
+package-lock.json
+yarn.lock
+yarn-error.log
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+.Python
+venv/
+env/
+ENV/
+.env
+.venv
+*.so
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Logs
+logs
+*.log
+
+# IDE / Editors
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
+
+# Project specific
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local 
