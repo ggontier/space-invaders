@@ -26,10 +26,14 @@ async def send_command():
             "s": "ENTER"
         }
         
+        # Get the current event loop
+        loop = asyncio.get_running_loop()
+
         # Main control loop
         while True:
-            # Get input from user
-            user_input = input("Enter command: ").lower()
+            # Get input from user asynchronously using run_in_executor
+            user_input = await loop.run_in_executor(None, input, "Enter command: ")
+            user_input = user_input.lower()
             
             print(f"Received: {user_input}")
             # Check for quit command
