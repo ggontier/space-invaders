@@ -26,37 +26,30 @@ class MLP(nn.Module):
             nn.Linear(64, 32),
             nn.ReLU(),
             nn.Linear(32, num_classes),
-            nn.Softmax(dim=1)
+            nn.Softmax(dim = 1)
         )
 
     def forward(self, x):
         return self.model(x)
 
 # Initialiser MediaPipe pour l'extraction des landmarks
-mp_hands = mp.solutions.hands.Hands(static_image_mode=False, max_num_hands=2, min_detection_confidence=0.5)
+mp_hands = mp.solutions.hands.Hands()
 
 # Fonction pour extraire les landmarks d'une frame
 def extract_landmarks(frame):
     frame_rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
-    results = mp_hands.process(frame_rgb)
+    result = mp_hands.process(frame_rgb)
 
-    if results.multi_hand_landmarks:
+    if result.multi_hand_landmarks:
         landmarks = []
-        for hand_landmarks in results.multi_hand_landmarks:
-            for lm in hand_landmarks.landmark:
-                landmarks.extend([lm.x, lm.y, lm.z])  # Ajouter les coordonnées X, Y, Z
-
-        # Si une seule main est détectée, compléter avec des zéros pour la deuxième main
-        if len(results.multi_hand_landmarks) == 1:
-            landmarks.extend([0.0] * 63)  # Ajouter 63 zéros pour la deuxième main
-
+        for landmark in result.multi_hand_landmarks[0].landmark:
+            landmarks.extend([landmark.x, landmark.y, landmark.z])  # Ajouter les coordonnées
         return np.array(landmarks)
-
-    print("⚠️ Aucun landmark détecté.")
-    return None
+    else:
+        return None
 
 # Charger le modèle et ses poids
-model = MLP(input_size=126, num_classes=4)  # Remplacer 63 par 126 pour gérer deux mains
+model = MLP(input_size = 63, num_classes = 4)  # Assurez-vous que input_size correspond à vos données
 state_dict = torch.load("model.pth", map_location=torch.device("cpu"))
 model.load_state_dict(state_dict)
 model.eval()  # Mettre le modèle en mode évaluation
@@ -105,10 +98,11 @@ async def send_command(cap, websocket):
         # Extraire les landmarks
         landmarks = extract_landmarks(frame_resized)
         if landmarks is None:
+            print("⚠️ Aucun landmark détecté pour cette frame.")
             continue
 
         # Prédiction avec le modèle
-        if landmarks.shape[0] == 126:  # Vérifier que les landmarks incluent deux mains ou une seule remplie
+        if landmarks.shape[0] == 63:
             input_tensor = torch.tensor(landmarks, dtype=torch.float32).unsqueeze(0)
             with torch.no_grad():
                 predictions = model(input_tensor)
