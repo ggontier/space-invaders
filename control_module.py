@@ -152,3 +152,6 @@ async def main():
 # Fonction principale
 if __name__ == "__main__":
     asyncio.run(main())
+
+# Lien vers une vidéo de démo
+# https://drive.google.com/file/d/1POUiXCxvYLY9IdonZZHKTGHfaqgf0VCf/view?usp=sharing
