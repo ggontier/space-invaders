@@ -1,3 +1,5 @@
+# Importer les modules nécessaires
+
 import cv2
 import numpy as np
 import torch
@@ -48,8 +50,10 @@ def extract_landmarks(frame):
     else:
         return None
 
-# Charger le modèle et ses poids
-model = MLP(input_size = 63, num_classes = 4)  # Assurez-vous que input_size correspond à vos données
+# Instancier le modèle
+model = MLP(input_size = 63, num_classes = 4)
+
+# Charger les poids du modèle entraîné
 state_dict = torch.load("model.pth", map_location=torch.device("cpu"))
 model.load_state_dict(state_dict)
 model.eval()  # Mettre le modèle en mode évaluation
@@ -62,7 +66,7 @@ gesture_to_command = {
     3: "RIGHT"    # classe 3 = droite
 }
 
-# Fonction pour afficher la vidéo dans un thread séparé
+# Fonction pour afficher le retour vidéo
 def show_video(cap):
     while True:
         ret, frame = cap.read()
@@ -75,7 +79,7 @@ def show_video(cap):
     cap.release()
     cv2.destroyAllWindows()
 
-# Fonction principale asynchrone pour envoyer des commandes
+# Fonction pour envoyer les commandes prédites
 async def send_command(cap, websocket):
     last_frame_time = 0
 
@@ -149,7 +153,6 @@ async def main():
     except websockets.ConnectionClosedError:
         print("❌ Connexion WebSocket interrompue")
 
-# Fonction principale
 if __name__ == "__main__":
     asyncio.run(main())
 
